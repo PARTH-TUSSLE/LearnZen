@@ -1,6 +1,6 @@
 const { Router } = require('express');
-
 const userRouter = Router();
+const {userModel} = require("../db.js");
 
 userRouter.post("/signup", (req, res) => {
    res.send({
