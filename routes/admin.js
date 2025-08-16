@@ -1,8 +1,9 @@
 const Router = require("express");
 const adminRouter = Router();
-const {adminModel} = require("../db.js");
+const {adminModel, courseModel} = require("../db.js");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+const { adminMiddleware } = require("../middlewares/admin.js");
 const JWT_ADMIN_PASSWORD = "adminhikehdeee!"
 
 
@@ -55,14 +56,24 @@ adminRouter.post("/signin", async (req, res) => {
     return res.status(500).json({ msg: "Server error" });
   }
 
-  res.json({
-    message: "Admin signed in successfully",
-  });
 });
 
-adminRouter.post("/course", (req, res) => {
+adminRouter.post("/course", adminMiddleware, async (req, res) => {
+
+  const adminId = req.userId
+  const{title, description, price, imageUrl}=req.body;
+
+  const course = await courseModel.create(({
+    title:title,
+    description:description,
+    price:price,
+    imageUrl:imageUrl,
+    creatorId: adminId
+  }))
+
   res.json({
-    message: "Add a new course",
+    message: "Added a new course",
+    courseId: course._id,
   });
 });
 
